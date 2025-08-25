@@ -1,0 +1,36 @@
+.Container{
+    width: 300px;
+    height: 400px;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 15px;
+    background-color: rgb(18, 18, 23);
+    border: solid 1px rgba(255, 255, 255, 0.05)
+}
+.UserImage{
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+}
+.MainInfoContainer{
+    display: flex;
+    margin-top: 20px;
+    margin-left: 20px;
+    align-items: center;
+}
+.MainMainInfoContainer{
+    margin-left: 15px;
+}
+.DisplayName{
+    color: white;
+    margin: 0px;
+    font-size: 20px;
+}
+.UserName{
+    color: white;
+    margin: 0px;
+    font-size: 16px;
+    font-weight: normal;
+}

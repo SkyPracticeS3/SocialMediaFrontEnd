@@ -1,0 +1,68 @@
+.ApplicationContainer{
+    width: 100%;
+    height: 100vh;
+    background-color: rgb(20, 20, 25);
+}
+.ApplicationHeader{
+    width: 100%;
+    height: 30px;
+    background-color: rgb(10, 10, 15);
+    text-align: center;
+    line-height: 30px;
+    color: white;
+    font-family: 'Geist', sans-serif;
+    border-bottom: solid 1px rgba(255, 255, 255, 0.05)
+}
+.ApplicationFlexContainer{
+    display: flex;
+}
+.ApplicationAside{
+    width: calc(22% - 10px);
+    margin-left: 5px;
+    margin-top: 5px;
+    border-radius: 10px;
+    height: calc(100vh - 10px);
+    border: solid 1px rgba(255, 255, 255, 0.05);
+    background-color: rgb(15, 15, 19);
+    overflow: auto;
+}
+
+
+.SelfProfileViewer{
+    width: calc(22% - 25px);
+    left: calc(7.5px + 5px);
+    bottom: calc(7.5px + 5px);
+    border-radius: 10px;
+    height: 60px;
+    position: absolute;
+    background-color: rgba(25, 25, 32);
+    display: flex;
+    align-items: center;
+    user-select: none;
+}
+.SelfPfp {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-left: 20px;
+}
+.flexUserDetailsCon{
+    margin-left: 10px;
+    color: white;
+    font-family: 'Geist', sans-serif;
+}
+.selfUserName{
+    margin: 0px;
+}
+.selfStatus{
+    margin: 0px;
+}
+.OnlineIndicator{
+    width: 12px;
+    height: 12px;
+    background-color: lightgreen;
+    border-radius: 50%;
+    margin-left: -14px;
+    margin-top: 30px;
+    border: 4px solid rgb(20, 20, 25);
+}

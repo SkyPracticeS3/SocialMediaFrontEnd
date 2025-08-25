@@ -1,0 +1,16 @@
+.ApplicationDisplayedInformation{
+    width: calc(20% - 5px);
+    margin-left: 5px;
+    margin-top: 5px;
+    height: calc(100vh - 10px);
+    background-color: rgb(15, 15, 19);
+    border: solid 1px rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    user-select: none;      
+}
+.Title{
+    margin: 0px;
+    color: white;
+    margin-left: 20px;
+    margin-top: 20px;
+}

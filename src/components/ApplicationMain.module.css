@@ -1,0 +1,149 @@
+.ApplicationMain{
+    width: calc(58% - 10px);
+    margin-top: 5px;
+    margin-left: 5px;
+    height: calc(100vh - 10px);
+    background-color: rgb(15, 15, 19);
+    border: solid 1px rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+}
+.FriendsImg{
+    width: 40px;
+    height: 40px;
+}
+.FriendsTitleContainer{
+    display: flex;
+    align-items: center;
+    margin-top: 20px;
+    margin-left: 20px;
+    user-select: none;
+}
+.FriendsTitle{
+    color: white;
+    margin: 0px;
+    margin-left: 15px;
+}
+.FriendsContainer{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 10px;
+    overflow-y: auto;
+    height: calc(100vh - 90px);
+}
+/*
+    <div className={styles.Friend}>
+        <img className={styles.FriendImage}></img>
+        <div className={styles.OnlineStatusIndicator}></div>
+        <div className={styles.FriendInfoContainer}>
+            <h4 className={styles.FriendName}>John</h4>
+            <h5 className={styles.FriendStatus}>Online</h5>
+        </div>
+    </div>
+*/
+
+.Friend{
+    display: flex;
+    width: 90%;
+    background-color: rgb(20, 20, 25);
+    min-height: 62px;
+    border-radius: 15px;
+    color: white;
+    align-items: center;
+    margin-top: 10px;
+    user-select: none;
+    transition-duration: 0.2s;
+    cursor: pointer;
+}
+.Friend:hover{
+    background-color: rgb(25, 25, 32);
+    scale: 101%;
+}
+.FriendImage{
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-left: 15px;
+}
+.FriendInfoContainer{
+    margin-left: 15px;
+}
+.FriendName{
+    margin: 0px;
+    font-weight: 600;
+}
+.FriendStatus{
+    margin: 0px;
+    color: lightgray;
+    font-weight: 600;
+}
+.OnlineStatusIndicator{
+    width: 12px;
+    height: 12px;
+    background-color: lightgreen;
+    border-radius: 50%;
+    margin-left: -14px;
+    margin-top: 30px;
+    border: 4px solid rgb(20, 20, 25);
+}
+.Tab{
+    color: white;
+    margin-left: 15px;
+    border-radius: 10px;
+    width: 50px;
+    text-align: center;
+    height: 30px;
+    line-height: 30px;
+    background-color: rgba(25, 25, 32, 0.6);
+    transition-duration: 0.1s;
+    cursor: pointer;
+}
+.Tab:hover{
+    background-color: rgba(30, 30, 42, 0.6);
+}
+.ActiveTab{
+    background-color: rgba(25, 25, 32, 1);
+}
+.AddFriendInput{
+    color: white;
+    width: 90%;
+    margin-top: 20px;
+    height: 32px;
+    outline:none;
+    transition-duration: 0.1s;
+    border-radius: 5px;
+    border: none;
+    background-color: rgb(25, 25, 32, 1);
+    outline-color: transparent;
+    padding: 5px;
+    padding-left: 15px;
+    
+    font-size: 17px;
+}
+.AddFriendInput:focus {
+    outline: 1px solid rgba(255, 255, 255, 0.1);
+}
+.AddFriendContainer{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+.AddFriendForm{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+.NoFriends{
+    color: white;
+}
+.SuggestedFriendsContainer{
+    width: 100%;
+    height: calc(100vh - 160px);
+    margin-top: 10px;  
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    overflow-y: auto;
+}

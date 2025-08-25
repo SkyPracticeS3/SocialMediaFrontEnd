@@ -1,0 +1,103 @@
+.AuthPageContainer {
+    background-color: black;
+    width: 100%;
+    height: 100vh;
+    display: flex;
+}
+.AuthPageForm{
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    width: 220px;
+    background-color: white;
+    padding-left: 50px;
+    padding-right: 50px;
+}
+.AuthPageTitle{
+    font-weight: bold;
+    font-family: 'Geist', sans-serif;
+    color: black;
+}
+.AuthPageInputLabel{
+    font-family: 'Geist', sans-serif;
+    color: gray;
+    margin-top: 10px;
+}
+.AuthPageInput{
+    height: 23px;
+    font-family: 'Geist', sans-serif;
+    font-size: 17px;
+    border: solid 2px gray;
+    border-radius: 5px;
+    outline: none;
+    transition-duration: 0.2s;
+    transition-timing-function: ease-out;
+}
+.AuthPageInput:focus {
+    border: solid 2px rgb(189, 189, 189);
+}
+.AuthPageInput:valid {
+    border-color: green;
+}
+.AuthPageSubmitButton{
+    width: 100%;
+    outline: none;
+    border: none;
+    border-radius: 5px;
+    height: 100%;
+    background-color: black;
+    border-radius: 12px;
+    transform: translateY(-3px);
+    color: white;
+    font-family: 'Geist', sans-serif;
+    font-size: 15px;
+    cursor:pointer;
+    font-weight: bold;
+    transition-duration: 0.2s;
+}
+.AuthPageSubmitButton:hover{
+    transform: translateY(-6px);
+}
+.AuthPageSubmitButton:active{
+    transform: translateY(0px);
+}
+.AuthPageSubmitButtonCon{
+    width: 90px;
+    height: 30px;
+    background-color: rgb(50, 50, 50);
+    border-radius: 12px;
+
+}
+.AuthPageSubmitButtonConCon{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+.AuthPageFileInput {
+    height: 23px;
+    font-family: 'Geist', sans-serif;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor:pointer;
+}
+.AuthPageFileInput::file-selector-button {
+    background-color: black;
+    border-radius: 5px;
+    color: white;
+    cursor:pointer;
+
+}
+.OtherAuthPageHref{
+    width: 100%;
+    text-align: center;
+    margin-top: 10px;
+    color: #2196F3;
+    font-size: 16px;
+    font-family: 'Geist', sans-serif;
+    transition-duration: 0.2s;
+}
+
+.OtherAuthPageHref:hover {
+    color: #00aeff;
+}
