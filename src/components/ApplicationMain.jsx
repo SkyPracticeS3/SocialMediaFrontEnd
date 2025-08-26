@@ -3,8 +3,11 @@ import { useState } from 'react'
 import styles from './ApplicationMain.module.css'
 import SuggestedOrFriendUser from './SuggestedOrFriendUser';
 import { toast } from 'react-toastify';
+import { userInfoContext } from '@/app/App/page';
+import { useContext } from 'react';
 
 export default function ApplicationMain(){
+    const {userInfo, setUserInfo} = useContext(userInfoContext);
     const [currentFriends, setCurrentFriends] = useState([]);
     const [currentPage, setCurrentPage] = useState('All');
     const [currentUserName, setCurrentUserName] = useState('');
@@ -20,8 +23,34 @@ export default function ApplicationMain(){
             currentPage == 'All' ?
         <div className={styles.FriendsContainer}>
             {
-                currentFriends.length > 0 ?
-                currentFriends.map(user => <SuggestedOrFriendUser user={user}></SuggestedOrFriendUser>) : <h1 className={styles.NoFriends}>Add A Friend To Start</h1>
+                userInfo && userInfo.relations.length == 0 && userInfo.pendingSentFriendRequests.length == 0 &&
+                    userInfo.pendingReceivedFriendRequests.length == 0 &&
+                    <div onClick={() => {setCurrentPage('Search')}} className={styles.NoFriendsContainer}>
+                    <h1 className={styles.NoFriendsTitle}>... Oops</h1>
+                    <img src='CryingFace.gif' className={styles.CryingFace}></img>
+                    <h1 className={styles.NoFriendsHint}>You Have No Friends Currently</h1>
+                    <h3 className={styles.NoFriendsTwoNdHint}>Add Some Friend To Make This Guy Stop Crying!</h3>
+                    </div>
+            }
+            {
+                userInfo && userInfo.pendingSentFriendRequests.length > 0 &&
+                <>
+                <p className={styles.friendLabel}>Pending Sent</p>
+                <div className={styles.friendLabelUnderLine}></div>
+                {
+                    userInfo.pendingSentFriendRequests.map(req => <SuggestedOrFriendUser user={req.receiverUser}></SuggestedOrFriendUser>)
+                }
+                </>
+            }
+            {
+                userInfo && userInfo.pendingReceivedFriendRequests.length > 0 &&
+                <>
+                <p className={styles.friendLabel}>Pending Received</p>
+                <div className={styles.friendLabelUnderLine}></div>
+                {
+                    userInfo.pendingReceivedFriendRequests.map(req => <SuggestedOrFriendUser user={req.senderUser}></SuggestedOrFriendUser>)
+                }
+                </>
             }
         </div> :
         <div className={styles.AddFriendContainer}>

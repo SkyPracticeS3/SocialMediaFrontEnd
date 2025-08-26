@@ -9,6 +9,13 @@ body {
 }
 *{
   scrollbar-width: none;
+  color: white;
+}
+button {
+  user-select: none;
+}
+img{
+  user-select: none;
 }
 .OnlineIndicator{
   width: 12px;
