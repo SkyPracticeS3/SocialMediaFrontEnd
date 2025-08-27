@@ -1,17 +1,17 @@
 'use client'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import styles from './ApplicationMain.module.css'
 import SuggestedOrFriendUser from './SuggestedOrFriendUser';
 import { toast } from 'react-toastify';
 import { userInfoContext } from '@/app/App/page';
 import { useContext } from 'react';
 
-export default function ApplicationMain(){
+export default function ApplicationMain({setFriendRequestNotificationClick, currentPage, setCurrentPage}){
     const {userInfo, setUserInfo} = useContext(userInfoContext);
     const [currentFriends, setCurrentFriends] = useState([]);
-    const [currentPage, setCurrentPage] = useState('All');
     const [currentUserName, setCurrentUserName] = useState('');
     const [currentSuggested, setCurrentSuggested] = useState([]);
+
     return <main className={styles.ApplicationMain}>
         <div className={styles.FriendsTitleContainer}>
             <img className={styles.FriendsImg} src='friends.png'></img>
@@ -38,7 +38,7 @@ export default function ApplicationMain(){
                 <p className={styles.friendLabel}>Pending Sent</p>
                 <div className={styles.friendLabelUnderLine}></div>
                 {
-                    userInfo.pendingSentFriendRequests.map(req => <SuggestedOrFriendUser user={req.receiverUser}></SuggestedOrFriendUser>)
+                    userInfo.pendingSentFriendRequests.map((req, index) => <SuggestedOrFriendUser key={index} user={req.receiverUser}></SuggestedOrFriendUser>)
                 }
                 </>
             }
@@ -48,7 +48,26 @@ export default function ApplicationMain(){
                 <p className={styles.friendLabel}>Pending Received</p>
                 <div className={styles.friendLabelUnderLine}></div>
                 {
-                    userInfo.pendingReceivedFriendRequests.map(req => <SuggestedOrFriendUser user={req.senderUser}></SuggestedOrFriendUser>)
+                    userInfo.pendingReceivedFriendRequests.map((req, index) => <SuggestedOrFriendUser key={index} user={req.senderUser}></SuggestedOrFriendUser>)
+                }
+                </>
+            }
+            {
+                userInfo && userInfo.relations.length > 0 &&
+                <>
+                <p className={styles.friendLabel}>Online</p>
+                <div className={styles.friendLabelUnderLine}></div>
+                {
+                    userInfo.relations.filter(e => e.first.userName == userInfo.userName ? e.second.status == 'online' : e.first.status == 'online').map((e, index) => <SuggestedOrFriendUser key={index} user={
+                        e.first.userName == userInfo.userName ? e.second : e.first
+                    }></SuggestedOrFriendUser>)
+                }
+                <p className={styles.friendLabel}>Offline</p>
+                <div className={styles.friendLabelUnderLine}></div>
+                {
+                    userInfo.relations.filter(e => e.first.userName == userInfo.userName ? e.second.status == 'offline' : e.first.status == 'offline').map((e, index) => <SuggestedOrFriendUser key={index} user={
+                        e.first.userName == userInfo.userName ? e.second : e.first
+                    }></SuggestedOrFriendUser>)
                 }
                 </>
             }
@@ -69,7 +88,7 @@ export default function ApplicationMain(){
                 }} required autoComplete='off' placeholder='Type The UserName'></input>
             </form>
             <div className={styles.SuggestedFriendsContainer}>
-                {currentSuggested.map(user => <SuggestedOrFriendUser user={user}></SuggestedOrFriendUser>)}
+                {currentSuggested.map((user, index) => <SuggestedOrFriendUser key={index} user={user}></SuggestedOrFriendUser>)}
             </div>
         </div>
         }

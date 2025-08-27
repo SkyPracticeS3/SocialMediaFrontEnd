@@ -35,10 +35,11 @@
     border-radius: 10px;
     height: 60px;
     position: absolute;
-    background-color: rgba(25, 25, 32);
+    background-color: rgba(20, 20, 25);
     display: flex;
     align-items: center;
     user-select: none;
+    border: solid 1px rgba(255, 255, 255, 0.05);
 }
 .SelfPfp {
     width: 40px;
@@ -53,9 +54,13 @@
 }
 .selfUserName{
     margin: 0px;
+    margin-top: 5px;
 }
 .selfStatus{
     margin: 0px;
+    font-size: 15px;
+    color: lightgray;
+    margin-top: -5px;
 }
 .OnlineIndicator{
     width: 12px;
@@ -65,4 +70,9 @@
     margin-left: -14px;
     margin-top: 30px;
     border: 4px solid rgb(20, 20, 25);
+}
+.friendRequestToast{
+    --toastify-color-progress-dark: rgb(14 165 233);
+}
+.friendRequestToast:hover{
 }

@@ -1,4 +1,4 @@
-.Friend{
+.Friend {
     display: flex;
     width: 90%;
     background-color: rgb(20, 20, 25);
@@ -8,8 +8,11 @@
     align-items: center;
     margin-top: 10px;
     user-select: none;
-    transition-duration: 0.2s;
+    border-color: rgba(15, 15, 22, 0.5);
+    transition-duration: 0.1s;
     cursor: pointer;
+    border: solid 4px rgba(15, 15, 22, 0.7);
+
 }
 .Friend:hover{
     background-color: rgb(25, 25, 32);
@@ -27,6 +30,8 @@
 .FriendName{
     margin: 0px;
     font-weight: 600;
+    display: flex;
+    align-items: center;
 }
 .OnlineFriendName{
     margin: 0px;
@@ -41,4 +46,8 @@
 .OnlineFriendInfoContainer{
     margin-left: 10px;
 
+}
+.Badge{
+    margin-left: 10px;
+    display: flex;
 }

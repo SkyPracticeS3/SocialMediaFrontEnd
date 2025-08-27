@@ -1,5 +1,7 @@
 export default function Loading(){
     return <div className="LoadingContainer">
-        <div className="LoadingAnimation"></div>
+        <div class="spinner-border" role="status">
+  <span class="visually-hidden">Loading...</span>
+</div>
     </div>
 }

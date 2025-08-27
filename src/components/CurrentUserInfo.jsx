@@ -2,21 +2,45 @@
 import { useEffect, useState, useRef, useContext } from 'react'
 import styles from './CurrentUserInfo.module.css'
 import { socketContext, userInfoContext } from '@/app/App/page';
+import { Dropdown } from 'react-bootstrap';
 
 export default function CurrentUserInfo({userInfO, setShown, shown}){
     const userName = JSON.parse(localStorage.getItem('credentals')).userName;
     const ContainerRef = useRef(null);
-    console.log(userName);
     const [scaled, setIsScaled] = useState(false);
     const sock = useContext(socketContext);
     const {userInfo, setUserInfo} = useContext(userInfoContext);
 
     const addFriend = () => {
         sock.current.emit('sendFriendRequest', {userName: userInfO.userName});
-        const newUserInfo = structuredClone(userInfo);
-        newUserInfo.pendingSentFriendRequests.push({senderUser: {userName: newUserInfo.userName}, receiverUser: {userName: userInfO.userName},
-            state: 'pending', sentAt : Date.now()});
-        setUserInfo(newUserInfo);
+        setUserInfo(userInfoo => {
+            const newUserInfo = structuredClone(userInfoo);
+            newUserInfo.pendingSentFriendRequests.push({senderUser: structuredClone(newUserInfo), receiverUser: structuredClone(userInfO),
+                state: 'pending', sentAt : Date.now()});
+            return newUserInfo;
+        })
+        
+    }
+    const acceptFriend = () => {
+        sock.current.emit('acceptFriendRequest', {userName: userInfO.userName});
+        setUserInfo(old => {
+            const newUserInfo = structuredClone(old);
+            newUserInfo.pendingReceivedFriendRequests = newUserInfo.pendingReceivedFriendRequests.filter(
+                e => e.senderUser.userName != userInfO.userName
+            );
+            newUserInfo.relations.push({ first: newUserInfo, second: userInfO, relation: 'friends' });
+            return newUserInfo;
+        })
+    }
+    const declineFriend = () => {
+        sock.current.emit('declineFriendRequest', {userName: userInfO.userName});
+        setUserInfo(old => {
+            const newUserInfo = structuredClone(old);
+            newUserInfo.pendingReceivedFriendRequests = newUserInfo.pendingReceivedFriendRequests.filter(
+                e => e.senderUser.userName != userInfO.userName
+            );
+            return newUserInfo;
+        })
     }
     useEffect(()=>{
         const timer = setTimeout(() => {
@@ -41,6 +65,8 @@ export default function CurrentUserInfo({userInfO, setShown, shown}){
                 {
                     !userInfo.pendingSentFriendRequests.some(e => e.receiverUser.userName == userInfO.userName) &&
                     !userInfo.pendingReceivedFriendRequests.some(e => e.senderUser.userName == userInfO.userName) &&
+                    !userInfo.relations.some(e => e.first.userName == userInfo.userName ?
+                        e.second.userName == userInfO.userName : e.first.userName == userInfO.userName)   &&
                     <button className={`${styles.AddFriendButton} ${styles.MessageButton}`} onClick={() => {addFriend()}}>Add</button>
                 }
                 {
@@ -50,11 +76,18 @@ export default function CurrentUserInfo({userInfO, setShown, shown}){
                 {
                     userInfo.pendingReceivedFriendRequests.some(e => e.senderUser.userName == userInfO.userName) && 
                     <>
-                        <button className={`${styles.AddFriendButton} ${styles.MessageButton}`} onClick={() => {}}>✔️</button>
-                        <button className={`${styles.AddFriendButton} ${styles.MessageButton}`} onClick={() => {}}>✖️</button>
+                        <button className={`${styles.AddFriendButton} ${styles.MessageButton}`} onClick={() => {acceptFriend()}}>✔️</button>
+                        <button className={`${styles.AddFriendButton} ${styles.MessageButton}`} onClick={() => {declineFriend()}}>❌</button>
                     </>
                 }
-                <button className={`${styles.MoreButton} ${styles.MessageButton}`}>•••</button>
+                <Dropdown className='dropdown'>
+                    <Dropdown.Toggle className={`btn btn-dark ${styles.MoreButton}`}>•••</Dropdown.Toggle>
+                    <Dropdown.Menu data-bs-theme='dark'>
+                        <Dropdown.Item>🚫 Block</Dropdown.Item>
+                        <Dropdown.Item>Ignore</Dropdown.Item>
+                        <Dropdown.Item>Gift</Dropdown.Item>
+                    </Dropdown.Menu>
+                </Dropdown>
             </>
         }
         </div>

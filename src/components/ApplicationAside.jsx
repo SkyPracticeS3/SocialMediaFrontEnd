@@ -13,7 +13,7 @@ export default function ApplicationAside(){
             <div className={styles.FriendsContainer}>
                 {
                     friends.map((friend, index)=>
-                        <div className={`${styles.Friend} ${index == friends.length - 1 ? styles.LastFriend : 
+                        <div key={index} className={`${styles.Friend} ${index == friends.length - 1 ? styles.LastFriend : 
                             index == 0 ? styles.FirstFriend : ''}`}>
                             <img src={process.env.NEXT_PUBLIC_BACKEND_URL + `/users/${friend}/pfp`} className={styles.FriendImage}></img>
                             <div className="OnlineIndicator"></div>

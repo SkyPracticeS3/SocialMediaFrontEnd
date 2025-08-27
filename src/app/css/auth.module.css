@@ -8,7 +8,7 @@
     display: flex;
     flex-direction: column;
     height: 100vh;
-    width: 220px;
+    width: 300px;
     background-color: white;
     padding-left: 50px;
     padding-right: 50px;
@@ -17,6 +17,7 @@
     font-weight: bold;
     font-family: 'Geist', sans-serif;
     color: black;
+    margin-top: 20px;
 }
 .AuthPageInputLabel{
     font-family: 'Geist', sans-serif;
@@ -80,6 +81,8 @@
     font-family: 'Geist', sans-serif;
     border-radius: 5px;
     font-size: 16px;
+    color: black;
+
     cursor:pointer;
 }
 .AuthPageFileInput::file-selector-button {
@@ -87,7 +90,8 @@
     border-radius: 5px;
     color: white;
     cursor:pointer;
-
+    border: none;
+    outline: none;  
 }
 .OtherAuthPageHref{
     width: 100%;
