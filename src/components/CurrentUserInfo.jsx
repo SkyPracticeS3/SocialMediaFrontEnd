@@ -56,7 +56,7 @@ export default function CurrentUserInfo({userInfO, setShown, shown}){
             </div>
         </div>
         <button className={styles.Close} onClick={e => {setShown(false)}}>✖</button>
-        <p className={styles.Pronouns}>He/Him • <span className={styles.Activity}>Playing Minecraft</span></p>
+        <p className={styles.Pronouns}>He/Him • <span className={styles.Activity}>{userInfO.status}</span></p>
         <div className={styles.ButtonsContainer}>
         {
             userName != userInfO.userName &&
@@ -99,6 +99,6 @@ export default function CurrentUserInfo({userInfO, setShown, shown}){
             </>
         }
         
-        <p className={styles.MemberSince}>Member Since: <span className={styles.MemberSinceDate}>{`${new Date(userInfO.creationDate).getDate()}-${new Date(userInfO.creationDate).getMonth()}-${new Date(userInfO.creationDate).getFullYear()}`}</span></p>
+        <p className={styles.MemberSince}>Member Since: <span className={styles.MemberSinceDate}>{`${new Date(userInfO.creationDate).getDate()}/${new Date(userInfO.creationDate).getMonth()}/${new Date(userInfO.creationDate).getFullYear()}`}</span></p>
     </div>
 }   

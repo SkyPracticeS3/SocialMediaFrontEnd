@@ -83,7 +83,10 @@ export default function Application(){
                         <div className={styles.ApplicationFlexContainer}>
                             <aside className={styles.ApplicationAside}>
                                 <ApplicationAside></ApplicationAside>
-                                <div className={styles.SelfProfileViewer}>
+                                <div className={styles.SelfProfileViewer} onClick={e => {
+                                    setCurrentUserInfo(userInfo);
+                                    setShowCurrentUserInfo(true);
+                                }}>
                                     <img className={styles.SelfPfp} src={
                                         userInfo ? process.env.NEXT_PUBLIC_BACKEND_URL + '/users/' + userInfo.userName + '/pfp' : null}></img>
                                     <div className='OnlineIndicator'></div>

@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import styles from '../css/auth.module.css'
 import {toast} from 'react-toastify';
+import { Form, InputGroup } from 'react-bootstrap';
 import { ToastContainer } from 'react-toastify';
 export default function RegisterPage() {
     const [email, setEmail] = useState("");
@@ -41,30 +42,39 @@ export default function RegisterPage() {
     }
 
     return <><div className={styles.AuthPageContainer}>
-        <form className={styles.AuthPageForm}>
+        <form className={styles.AuthPageForm} onSubmit={(e) => {
+e.preventDefault();
+                        submitData();
+        }}>
             <h1 className={styles.AuthPageTitle}>Register</h1>
             <label className={styles.AuthPageInputLabel}>Email</label>
-            <input className={styles.AuthPageInput} onChange={(e) => {setEmail(e.target.value)}} type='email' name='email' required minLength={5} autoComplete='off'></input>
+            <Form.Control className={styles.AuthPageInput} onChange={(e) => {setEmail(e.target.value)}} type='email' name='email' required minLength={5} autoComplete='off'></Form.Control>
 
             <label className={styles.AuthPageInputLabel}>UserName</label>
-            <input className={styles.AuthPageInput} onChange={(e) => {setUserName(e.target.value)}} type='text' required name='userName' minLength={2} autoComplete='off'></input>
+            <Form.Control className={styles.AuthPageInput} onChange={(e) => {setUserName(e.target.value)}} type='text' required name='userName' minLength={2} autoComplete='off'></Form.Control>
 
             <label className={styles.AuthPageInputLabel}>Password</label>
-            <input className={styles.AuthPageInput} onChange={(e) => {setpassWord(e.target.value)}} type='password' name='passWord' required minLength={7} autoComplete='off'></input>
+            <Form.Control className={styles.AuthPageInput} onChange={(e) => {setpassWord(e.target.value)}} type='password' name='passWord' required minLength={7} autoComplete='off'></Form.Control>
 
             <label className={styles.AuthPageInputLabel}>PhoneNum</label>
-            <input className={styles.AuthPageInput} onChange={(e) => {setPhoneNum(e.target.value)}} type='tel' name='phoneNum' required minLength={5} autoComplete='off'></input>
+            <Form.Control className={styles.AuthPageInput} onChange={(e) => {setPhoneNum(e.target.value)}} type='tel' name='phoneNum' required minLength={5} autoComplete='off'></Form.Control>
 
             <label className={styles.AuthPageInputLabel}>Pfp</label>
-            <input className={styles.AuthPageFileInput} onChange={(e) => {setPfp(e.target.files[0])}} type='file' name='pfp' required autoComplete='off'></input>
+            <Form.Control onChange={(e) => {setPfp(e.target.files[0])}} type='file' name='pfp' required autoComplete='off'></Form.Control>
+
+            <label className={styles.AuthPageInputLabel}>Gender</label>
+            <Form.Select className={styles.Select}>
+                <option className={styles.Option}>Male</option>
+                <option className={styles.Option}>Female</option>
+                <option className={styles.Option}>Prefer Not To Say</option>
+            </Form.Select>
 
             <a className={styles.OtherAuthPageHref} href='/Login'>Already Have An Account ? Login</a>
 
             <div className={styles.AuthPageSubmitButtonConCon}>
                 <div className={styles.AuthPageSubmitButtonCon}>
                     <button className={styles.AuthPageSubmitButton} type='submit' onClick={(e) => {
-                        e.preventDefault();
-                        submitData();
+                        
                     }}>Register</button>
                 </div>
             </div>

@@ -3,6 +3,7 @@
 import {useState, useEffect} from 'react';
 import {ToastContainer, toast} from 'react-toastify'
 import styles from '../css/auth.module.css'
+import { Form } from 'react-bootstrap';
 export default function LoginPage() {
     const [userName, setUserName] = useState("");
     const [passWord, setpassWord] = useState("");
@@ -27,20 +28,20 @@ export default function LoginPage() {
     }
 
     return <><div className={styles.AuthPageContainer}>
-        <form className={styles.AuthPageForm}>
+        <form className={styles.AuthPageForm} onSubmit={(e)=> {e.preventDefault();submitData()}}>
             <h1 className={styles.AuthPageTitle}>Login</h1>
 
             <label className={styles.AuthPageInputLabel}>UserName</label>
-            <input className={styles.AuthPageInput} onChange={(e) => {setUserName(e.target.value)}} type='text' required name='userName' minLength={2} autoComplete='off'></input>
+            <Form.Control className={styles.AuthPageInput} onChange={(e) => {setUserName(e.target.value)}} type='text' required name='userName' minLength={2} autoComplete='off'></Form.Control>
 
             <label className={styles.AuthPageInputLabel}>Password</label>
-            <input className={styles.AuthPageInput} onChange={(e) => {setpassWord(e.target.value)}} type='password' name='passWord' required minLength={7} autoComplete='off'></input>
+            <Form.Control className={styles.AuthPageInput} onChange={(e) => {setpassWord(e.target.value)}} type='password' name='passWord' required minLength={7} autoComplete='off'></Form.Control>
 
             <a className={styles.OtherAuthPageHref} href='/Register'>Don't Have An Account ? Register</a>
 
             <div className={styles.AuthPageSubmitButtonConCon}>
                 <div className={styles.AuthPageSubmitButtonCon}>
-                    <button className={styles.AuthPageSubmitButton} onClick={(e)=> {e.preventDefault();submitData()}} type='submit'>Login</button>
+                    <button className={styles.AuthPageSubmitButton} type='submit'>Login</button>
                 </div>
             </div>
         </form>
