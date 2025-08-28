@@ -53,7 +53,7 @@ export default function ApplicationMain({setFriendRequestNotificationClick, curr
                 </>
             }
             {
-                userInfo && userInfo.relations.length > 0 &&
+                userInfo && userInfo.relations.length > 0 && userInfo.relations.filter(e => e.first.userName == userInfo.userName ? e.second.status == 'online' : e.first.status == 'online').length > 0 &&
                 <>
                 <p className={styles.friendLabel}>Online</p>
                 <div className={styles.friendLabelUnderLine}></div>
@@ -62,6 +62,11 @@ export default function ApplicationMain({setFriendRequestNotificationClick, curr
                         e.first.userName == userInfo.userName ? e.second : e.first
                     }></SuggestedOrFriendUser>)
                 }
+                </>
+            }
+            {
+                userInfo && userInfo.relations.length > 0 && userInfo.relations.filter(e => e.first.userName == userInfo.userName ? e.second.status == 'offline' : e.first.status == 'offline').length > 0 &&
+                <>
                 <p className={styles.friendLabel}>Offline</p>
                 <div className={styles.friendLabelUnderLine}></div>
                 {

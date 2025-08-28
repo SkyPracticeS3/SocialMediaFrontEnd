@@ -42,6 +42,17 @@ export default function CurrentUserInfo({userInfO, setShown, shown}){
             return newUserInfo;
         })
     }
+    const unFriend = () => {
+        sock.current.emit('unFriend', {userName: userInfO.userName});
+        setUserInfo(old => {
+            const newUserInfo = structuredClone(old);
+            newUserInfo.relations = newUserInfo.relations.filter(
+                e => e.first.userName == userInfo.userName ? e.second.userName != userInfO.userName :
+                    e.first.userName != userInfO.userName
+            );
+            return newUserInfo;
+        })
+    }
     useEffect(()=>{
         const timer = setTimeout(() => {
             setIsScaled(true);
@@ -61,31 +72,35 @@ export default function CurrentUserInfo({userInfO, setShown, shown}){
         {
             userName != userInfO.userName &&
             <>
-                <button className={styles.MessageButton}>Message</button>
+                <button className={styles.MessageButton + " focus-ring focus-ring-dark"}>Message</button>
                 {
                     !userInfo.pendingSentFriendRequests.some(e => e.receiverUser.userName == userInfO.userName) &&
                     !userInfo.pendingReceivedFriendRequests.some(e => e.senderUser.userName == userInfO.userName) &&
                     !userInfo.relations.some(e => e.first.userName == userInfo.userName ?
                         e.second.userName == userInfO.userName : e.first.userName == userInfO.userName)   &&
-                    <button className={`${styles.AddFriendButton} ${styles.MessageButton}`} onClick={() => {addFriend()}}>Add</button>
+                    <button className={`${styles.AddFriendButton} ${styles.MessageButton} focus-ring focus-ring-dark`} onClick={() => {addFriend()}}>Add</button>
                 }
                 {
                     userInfo.pendingSentFriendRequests.some(e => e.receiverUser.userName == userInfO.userName)&&
-                    <button title='pending' className={`${styles.PendingAddFriendButton} ${styles.MessageButton}`}><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#FFFFFF"><path d="M480-80q-75 0-140.5-28.5t-114-77q-48.5-48.5-77-114T120-440q0-75 28.5-140.5t77-114q48.5-48.5 114-77T480-800q75 0 140.5 28.5t114 77q48.5 48.5 77 114T840-440q0 75-28.5 140.5t-77 114q-48.5 48.5-114 77T480-80Zm0-360Zm112 168 56-56-128-128v-184h-80v216l152 152ZM224-866l56 56-170 170-56-56 170-170Zm512 0 170 170-56 56-170-170 56-56ZM480-160q117 0 198.5-81.5T760-440q0-117-81.5-198.5T480-720q-117 0-198.5 81.5T200-440q0 117 81.5 198.5T480-160Z"/></svg></button>
+                    <button title='pending' className={`${styles.PendingAddFriendButton} ${styles.MessageButton} focus-ring focus-ring-dark`}><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#FFFFFF"><path d="M480-80q-75 0-140.5-28.5t-114-77q-48.5-48.5-77-114T120-440q0-75 28.5-140.5t77-114q48.5-48.5 114-77T480-800q75 0 140.5 28.5t114 77q48.5 48.5 77 114T840-440q0 75-28.5 140.5t-77 114q-48.5 48.5-114 77T480-80Zm0-360Zm112 168 56-56-128-128v-184h-80v216l152 152ZM224-866l56 56-170 170-56-56 170-170Zm512 0 170 170-56 56-170-170 56-56ZM480-160q117 0 198.5-81.5T760-440q0-117-81.5-198.5T480-720q-117 0-198.5 81.5T200-440q0 117 81.5 198.5T480-160Z"/></svg></button>
                 }
                 {
                     userInfo.pendingReceivedFriendRequests.some(e => e.senderUser.userName == userInfO.userName) && 
                     <>
-                        <button className={`${styles.AddFriendButton} ${styles.MessageButton}`} onClick={() => {acceptFriend()}}>✔️</button>
-                        <button className={`${styles.AddFriendButton} ${styles.MessageButton}`} onClick={() => {declineFriend()}}>❌</button>
+                        <button className={`${styles.AddFriendButton} ${styles.MessageButton} focus-ring focus-ring-dark`} onClick={() => {acceptFriend()}}>✔️</button>
+                        <button className={`${styles.AddFriendButton} ${styles.MessageButton} focus-ring focus-ring-dark`} onClick={() => {declineFriend()}}>❌</button>
                     </>
                 }
-                <Dropdown className='dropdown'>
+                <Dropdown tabIndex={'0'} className='focus-ring'>
                     <Dropdown.Toggle className={`btn btn-dark ${styles.MoreButton}`}>•••</Dropdown.Toggle>
                     <Dropdown.Menu data-bs-theme='dark'>
                         <Dropdown.Item>🚫 Block</Dropdown.Item>
-                        <Dropdown.Item>Ignore</Dropdown.Item>
-                        <Dropdown.Item>Gift</Dropdown.Item>
+                        <Dropdown.Item>Ignore</Dropdown.Item>{
+                            userInfo.relations.some(e => e.first.userName == userInfo.userName ? 
+                                e.second.userName == userInfO.userName : e.first.userName == userInfO.userName
+                            ) &&
+                        <Dropdown.Item onClick={e => {unFriend();}}>UnFriend</Dropdown.Item>
+                        }
                     </Dropdown.Menu>
                 </Dropdown>
             </>
