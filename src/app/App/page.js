@@ -15,6 +15,7 @@ export const showCurrentUserInfoCtx = createContext(null);
 export const currentUserInfoCtx = createContext(null);
 export const socketContext = createContext(null);
 export const userInfoContext = createContext(null);
+export const messagesContext = createContext(null);
 
 export default function Application(){
     const [currentMainPage, setCurrentMainPage] = useState("All");
@@ -27,12 +28,60 @@ export default function Application(){
     const [friendRequestAcceptedToastInfo, setFriendRequestAcceptedToastInfo] = useState({
         show: false, userInfo: {userName: 'none'}
     })
+    const [currentDm, setCurrentDm] = useState({});
+    const dmRef = useRef(null);
+    const [messages, setMessages] = useState(null);
     /**@type {RefObject<Socket<DefaultEventsMap, DefaultEventsMap> >} */
     const sock = useRef(null);
 
     const friendRequestNotificationClick = () => {
         setCurrentMainPage('All');
     }
+
+    const getOtherDmGuy = () => {
+        if(currentMainPage != 'Dm') return null;
+        return dmRef.current.first.userName == userInfo.userName ? dmRef.current.second : dmRef.current.first;
+    }
+
+    useEffect(()=>{
+        window.addEventListener('keydown', e => {
+            if(e.key == "Escape"){
+                console.log(currentDm);
+            }
+        })
+    }, [])
+
+
+    useEffect(()=>{
+        console.log(currentMainPage, currentDm)
+        if(currentMainPage != 'Dm' && currentDm != null){
+            dmRef.current = null
+            setCurrentDm(null);
+        }
+        if(currentMainPage != 'Dm' && messages != null){
+            setMessages(null);
+        }
+    }, [currentMainPage]);
+
+    useEffect(()=>{
+        console.log('got executed');
+        dmRef.current = currentDm;
+        console.log(dmRef.current);
+        if(!userInfo || !dmRef.current){
+            console.log("Something Went Wrong");
+            return;
+        }
+        const myFunction = async () => {
+                        console.log("Messages Got Successfully fetched firstly")
+
+            const rawMsgs = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/dms/${userInfo.userName}/${getOtherDmGuy().userName}/msgs`);
+            console.log("Messages Got Successfully fetched")
+            const msgs = await rawMsgs.json();
+            setMessages(msgs);
+            console.log(msgs);
+        }
+        myFunction();
+    }, [currentDm])
 
     useEffect(()=>{
         if(!localStorage.getItem('credentals')){
@@ -81,11 +130,20 @@ export default function Application(){
                     return newUserInfo;
                 })
             });
+            sock.current.on('dmMessageSent', data => {
+                console.log(dmRef.current._id, data.dm.uuid);
+                if(dmRef.current._id == data.dm.uuid){
+                    setMessages(msgs => ([...msgs, {senderUser: data.senderUser, content: data.content, sentAt: Date.now()}]))
+                }
+            })
             console.log(localStorage.getItem('credentals'));
-            sock.current.emit('authInfo', {
-                userName: JSON.parse(localStorage.getItem('credentals')).userName,
-                passWord: JSON.parse(localStorage.getItem('credentals')).passWord
-            });
+            sock.current.on('connect', e => {
+                sock.current.emit('authInfo', {
+                    userName: JSON.parse(localStorage.getItem('credentals')).userName,
+                    passWord: JSON.parse(localStorage.getItem('credentals')).passWord
+                });
+            })
+            
             sock.current.on('disconnect', ()=>{
                 console.log('disconnected');
             })
@@ -97,42 +155,43 @@ export default function Application(){
         <currentUserInfoCtx.Provider value={{currentUserInfo, setCurrentUserInfo}}>
             <socketContext.Provider value={sock}>
                 <userInfoContext.Provider value={{userInfo, setUserInfo}}>
-                    <div className={styles.ApplicationContainer}>
-                        <div className={styles.ApplicationFlexContainer}>
-                            <aside className={styles.ApplicationAside}>
-                                <ApplicationAside></ApplicationAside>
-                                <div className={styles.SelfProfileViewer} onClick={e => {
-                                    setCurrentUserInfo(userInfo);
-                                    setShowCurrentUserInfo(true);
-                                }}>
-                                    <img className={styles.SelfPfp} src={
-                                        userInfo ? process.env.NEXT_PUBLIC_BACKEND_URL + '/users/' + userInfo.userName + '/pfp' : null}></img>
-                                    <div className='OnlineIndicator'></div>
-                                    <div className={styles.flexUserDetailsCon}>
-                                        <p className={styles.selfUserName}>{userInfo ? userInfo.displayName : ''}</p>
-                                        <p className={styles.selfStatus}>{userInfo ? userInfo.status : ''}</p>
+                    <messagesContext.Provider value={{messages, setMessages}}>
+                        <div className={styles.ApplicationContainer}>
+                            <div className={styles.ApplicationFlexContainer}>
+                                <aside className={styles.ApplicationAside}>
+                                    <ApplicationAside setCurrentPage={setCurrentMainPage} rawOpenedDms={userInfo ? userInfo.openedDms : []} Dm={{currentDm, setCurrentDm}} openedDmsPeople={userInfo ? userInfo.openedDms.map(e => e.first.userName == userInfo.userName ? e.second : e.first) : null}></ApplicationAside>
+                                    <div className={styles.SelfProfileViewer} onClick={e => {
+                                        setCurrentUserInfo(userInfo);
+                                        setShowCurrentUserInfo(true);
+                                    }}>
+                                        <img className={styles.SelfPfp} src={
+                                            userInfo ? process.env.NEXT_PUBLIC_BACKEND_URL + '/users/' + userInfo.userName + '/pfp' : null}></img>
+                                        <div className='OnlineIndicator'></div>
+                                        <div className={styles.flexUserDetailsCon}>
+                                            <p className={styles.selfUserName}>{userInfo ? userInfo.displayName : ''}</p>
+                                            <p className={styles.selfStatus}>{userInfo ? userInfo.status : ''}</p>
+                                        </div>
                                     </div>
-                                </div>
-                            </aside>
-                            <ApplicationMain currentPage={currentMainPage} setCurrentPage={setCurrentMainPage}></ApplicationMain>
-                            <ApplicationDisplayedInformation></ApplicationDisplayedInformation>
-                        </div>
-                    </div>{showCurrentUserInfo && <CurrentUserInfo shown={showCurrentUserInfo} userInfO={currentUserInfo} setShown={setShowCurrentUserInfo}></CurrentUserInfo>}
-                    <ToastContainer position='top-center'>
-                        <SingleButtonToast show={friendRequestToastInfo.show} 
-                            title={'Friend Request'}
-                            description={`You Received A Friend Request From @${friendRequestToastInfo.userInfo.userName}`}
-                            onclick={() => {setCurrentMainPage('All'); setCurrentUserInfo(friendRequestToastInfo.userInfo); setShowCurrentUserInfo(true);setFriendRequestToastInfo(old => { return {show:false, userInfo: old.userInfo}})}}
-                            buttontxt={'GoTo'}
-                            ></SingleButtonToast>
-                        <SingleButtonToast show={friendRequestAcceptedToastInfo.show} 
-                            title={'Friend Request Accepted'}
-                            description={`@${friendRequestAcceptedToastInfo.userInfo.userName} Has Accepted Your Friend Request ✅`}
-                            onclick={() => {setCurrentMainPage('All'); setCurrentUserInfo(friendRequestAcceptedToastInfo.userInfo); setShowCurrentUserInfo(true);setFriendRequestAcceptedToastInfo(old => { return {show:false, userInfo: old.userInfo}})}}
-                            buttontxt={'GoTo'}
-                            ></SingleButtonToast>
-                    </ToastContainer>
-                    
+                                </aside>
+                                <ApplicationMain Dm={{currentDm, setCurrentDm}} currentPage={currentMainPage} setCurrentPage={setCurrentMainPage}></ApplicationMain>
+                                <ApplicationDisplayedInformation currentUser={dmRef.current?.first && dmRef.current?.second ? (dmRef.current.first.userName == userInfo.userName ? dmRef.current.second : dmRef.current.first) : null}></ApplicationDisplayedInformation>
+                            </div>
+                        </div>{showCurrentUserInfo && <CurrentUserInfo shown={showCurrentUserInfo} userInfO={currentUserInfo} setShown={setShowCurrentUserInfo}></CurrentUserInfo>}
+                        <ToastContainer position='top-center'>
+                            <SingleButtonToast show={friendRequestToastInfo.show} 
+                                title={'Friend Request'}
+                                description={`You Received A Friend Request From @${friendRequestToastInfo.userInfo.userName}`}
+                                onclick={() => {setCurrentMainPage('All'); setCurrentUserInfo(friendRequestToastInfo.userInfo); setShowCurrentUserInfo(true);setFriendRequestToastInfo(old => { return {show:false, userInfo: old.userInfo}})}}
+                                buttontxt={'GoTo'}
+                                ></SingleButtonToast>
+                            <SingleButtonToast show={friendRequestAcceptedToastInfo.show} 
+                                title={'Friend Request Accepted'}
+                                description={`@${friendRequestAcceptedToastInfo.userInfo.userName} Has Accepted Your Friend Request ✅`}
+                                onclick={() => {setCurrentMainPage('All'); setCurrentUserInfo(friendRequestAcceptedToastInfo.userInfo); setShowCurrentUserInfo(true);setFriendRequestAcceptedToastInfo(old => { return {show:false, userInfo: old.userInfo}})}}
+                                buttontxt={'GoTo'}
+                                ></SingleButtonToast>
+                        </ToastContainer>
+                    </messagesContext.Provider>
                 </userInfoContext.Provider>
             </socketContext.Provider>
         </currentUserInfoCtx.Provider>

@@ -57,17 +57,24 @@ e.preventDefault();
             <Form.Control className={styles.AuthPageInput} onChange={(e) => {setpassWord(e.target.value)}} type='password' name='passWord' required minLength={7} autoComplete='off'></Form.Control>
 
             <label className={styles.AuthPageInputLabel}>PhoneNum</label>
+            
             <Form.Control className={styles.AuthPageInput} onChange={(e) => {setPhoneNum(e.target.value)}} type='tel' name='phoneNum' required minLength={5} autoComplete='off'></Form.Control>
 
             <label className={styles.AuthPageInputLabel}>Pfp</label>
+
+            <Form.FloatingLabel label='Profile Picture'>
             <Form.Control onChange={(e) => {setPfp(e.target.files[0])}} type='file' name='pfp' required autoComplete='off'></Form.Control>
+            </Form.FloatingLabel>
 
             <label className={styles.AuthPageInputLabel}>Gender</label>
+
+            <Form.FloatingLabel label='Gender'>
             <Form.Select className={styles.Select}>
                 <option className={styles.Option}>Male</option>
                 <option className={styles.Option}>Female</option>
                 <option className={styles.Option}>Prefer Not To Say</option>
             </Form.Select>
+            </Form.FloatingLabel>
 
             <a className={styles.OtherAuthPageHref} href='/Login'>Already Have An Account ? Login</a>
 

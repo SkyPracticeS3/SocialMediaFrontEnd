@@ -53,6 +53,9 @@ export default function CurrentUserInfo({userInfO, setShown, shown}){
             return newUserInfo;
         })
     }
+    const openDm = () => {
+        sock.current.emit('openDm', userInfO);
+    }
     useEffect(()=>{
         const timer = setTimeout(() => {
             setIsScaled(true);
@@ -67,12 +70,12 @@ export default function CurrentUserInfo({userInfO, setShown, shown}){
             </div>
         </div>
         <button className={styles.Close} onClick={e => {setShown(false)}}>✖</button>
-        <p className={styles.Pronouns}>He/Him • <span className={styles.Activity}>{userInfO.status}</span></p>
+        <p className={styles.Pronouns}>He/Him • <span className={`badge ${styles.Activity}`}>{userInfO.status[0].toUpperCase() + userInfO.status.substr(1)}</span></p>
         <div className={styles.ButtonsContainer}>
         {
             userName != userInfO.userName &&
             <>
-                <button className={styles.MessageButton + " focus-ring focus-ring-dark"}>Message</button>
+                <button onClick={()=>{openDm()}} className={styles.MessageButton + " focus-ring focus-ring-dark"}>Message</button>
                 {
                     !userInfo.pendingSentFriendRequests.some(e => e.receiverUser.userName == userInfO.userName) &&
                     !userInfo.pendingReceivedFriendRequests.some(e => e.senderUser.userName == userInfO.userName) &&
@@ -114,6 +117,6 @@ export default function CurrentUserInfo({userInfO, setShown, shown}){
             </>
         }
         
-        <p className={styles.MemberSince}>Member Since: <span className={styles.MemberSinceDate}>{`${new Date(userInfO.creationDate).getDate()}/${new Date(userInfO.creationDate).getMonth()}/${new Date(userInfO.creationDate).getFullYear()}`}</span></p>
+        <p className={styles.MemberSince}>Member Since: <span className={`badge ${styles.MemberSinceDate}`}>{`${new Date(userInfO.creationDate).getDate()}/${new Date(userInfO.creationDate).getMonth()}/${new Date(userInfO.creationDate).getFullYear()}`}</span></p>
     </div>
 }   
