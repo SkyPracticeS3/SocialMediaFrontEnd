@@ -7,7 +7,7 @@ export default function ApplicationAside({setCurrentPage, rawOpenedDms, openedDm
         <div className={styles.Aside}>
             <div className={styles.TitleContainer}>
                 <img className={styles.FriendsIcon} src='friends.png'></img>
-                <h1 className={styles.AsideTitle}>Dms & GroupChats</h1>
+                <h1 className={styles.AsideTitle}>Direct Messages</h1>
             </div>
             <div className={styles.FriendsContainer}>
                 {

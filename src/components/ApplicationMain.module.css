@@ -356,3 +356,24 @@ box-shadow: rgb(100, 100, 155, .15) 0px 20px 30px -10px;    width: calc(58% - 11
 .SuggestedSearchCloseMark:focus {
     outline-color: rgba(15, 15, 20, 0.2);
 }
+.MessageDateDivider{
+    width: 100%;
+    text-align: center;
+    margin-top: 20px;
+    font-weight: normal;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.MessageStartDateDivider {
+    width: 100%;
+    height: 1px;
+    background-color: white;
+}
+.MessageDateDividerText{
+    background-color: rgb(15, 15, 19);
+    margin-top: -13px;
+    width: fit-content;
+    padding-right: 3px;
+    padding-left: 3px;
+}

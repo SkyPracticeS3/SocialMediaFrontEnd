@@ -8,6 +8,22 @@ import { useContext, useRef } from 'react';
 import { Badge, Card, Placeholder, Spinner } from 'react-bootstrap';
 import DmMessage from './DmMessage';
 
+export const groupBy = (array, predicate) => {
+    const resultingArrays = []
+
+    for(const element of array){
+        const resultVal = predicate(element);
+        const result = resultingArrays.find(e => e.key == resultVal);
+        if(result != undefined){
+            result.elements.push(element);
+        } else {
+            resultingArrays.push({key: resultVal, elements: [element]});
+        }
+    }
+
+    return resultingArrays;
+}
+
 export default function ApplicationMain({setFriendRequestNotificationClick, Dm, currentPage, setCurrentPage}){
     const {userInfo, setUserInfo} = useContext(userInfoContext);
     const [currentFriends, setCurrentFriends] = useState([]);
@@ -24,6 +40,7 @@ export default function ApplicationMain({setFriendRequestNotificationClick, Dm, 
     const [getPlaceHolders, setPlaceHolders] = useState(null);
     const placeHolderCount = 20
     const messagesContainerRef = useRef(null);
+    const SubmitButtonRef = useRef(null);
 
     const getOtherDmGuy = () => {
         if(currentPage != 'Dm') return;
@@ -50,6 +67,7 @@ export default function ApplicationMain({setFriendRequestNotificationClick, Dm, 
     }, [messages])
 
     useEffect(()=>{
+        console.log(groupBy(['dd', 'dd', 'bb', 'dd', 'sd'], e => e));
         const placeHolders = [];
 
         for(let i = 0; i < placeHolderCount; i++){
@@ -57,6 +75,11 @@ export default function ApplicationMain({setFriendRequestNotificationClick, Dm, 
             placeHolders.push(<div key={placeHolders.length} className={`${styles.PlaceHolder} ${styles.PlaceHolderAnimation}`} style={{width: String(width) + '%'}}></div>)
         }
         setPlaceHolders(placeHolders);
+        window.addEventListener('keydown', e => {
+            if(e.key == 'Enter' && inputRef.current.value != ''){
+                SubmitButtonRef.current.click()
+            }
+        })
     }, [])
 
     return <main className={styles.ApplicationMain}>
@@ -151,7 +174,11 @@ export default function ApplicationMain({setFriendRequestNotificationClick, Dm, 
                     </div>}
             </div>
         </div> : currentPage == 'Dm' ? <div ref={messagesContainerRef} className={styles.DmPageContainer}><div ref={msgDisplayRef} className={styles.MessagesContainer}>
-            {messages ? messages.map((msg, index) => <DmMessage key={index} sentAt={msg.sentAt} senderUserName={msg.senderUser} content={msg.content}></DmMessage>) : <div className={styles.DmPlaceHolderContainer}>
+            {messages ? groupBy(messages, e => new Date(e.sentAt).toDateString()).map((msgs, index) => <div key={index}>
+            <div className={styles.MessageDateDivider}><div className={styles.MessageStartDateDivider}></div>
+                <div className={styles.MessageDateDividerText}>{msgs.key}</div></div>{
+            msgs.elements.map((e, index) => <DmMessage key={index} Mine={e.senderUser == userInfo.userName}
+             sentAt={e.sentAt} senderUserName={e.senderUser} content={e.content}></DmMessage>)}</div>) : <div className={styles.DmPlaceHolderContainer}>
                 {
                     getPlaceHolders
                 }
@@ -159,7 +186,7 @@ export default function ApplicationMain({setFriendRequestNotificationClick, Dm, 
         </div>
             <div className={styles.MessageSendInputContainer}>
                 <input onChange={e => setMsgContent(e.target.value)} value={msgContent} ref={inputRef} className={styles.MessageSendInput} placeholder='Enter A Message'></input>
-                <button onClick={e => sendDmMessage()} className='btn btn-primary focus-ring focus-ring-primary ms-2'>Send</button>
+                <button ref={SubmitButtonRef} onClick={e => sendDmMessage()} className='btn btn-primary focus-ring focus-ring-primary ms-2'>Send</button>
             </div>
         </div> : <></>
         }
