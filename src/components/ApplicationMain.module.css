@@ -151,6 +151,7 @@ box-shadow: rgb(100, 100, 155, .15) 0px 20px 30px -10px;    width: calc(58% - 11
     width: 100%;
     display: flex;
     justify-content: center;
+    align-items: center;
 }
 .NoFriendsTitle{
     color: white;
@@ -300,4 +301,58 @@ box-shadow: rgb(100, 100, 155, .15) 0px 20px 30px -10px;    width: calc(58% - 11
     margin-top: 10px;
     min-height: 15px;
     border-radius: 5px;
+}
+.NullSuggestedContainer{
+
+}
+.NullTextBadge{
+    margin: 0px;
+    background-color: rgb(25, 25, 32);
+    border: dashed 3px rgba(255, 255, 255, 0.05);
+}
+.NullText{
+    margin: 0px;
+    margin-top: 20px;
+}
+.NoSuggestedFound{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: rgb(20, 20, 26);
+    padding: 20px;
+    margin-top: 20px;
+    border-radius: 15px;
+    border: dashed 4px rgba(255, 255, 255, 0.05)
+}
+.NoSuggestedFoundQuesMark {
+    font-size: 80px;
+    margin: 0px;
+}
+.NoSuggestedFoundSecondTitle {
+    margin: 0px;
+}
+.NoSuggestedFoundThirdTitle{
+    margin: 0px;
+}
+.SuggestedSearchCloseMark{  
+    margin-left: -30px;
+    margin-top: 20px;
+    cursor: pointer;
+    border-radius: 50%;
+    width: 25px;
+    background-color: rgba(20, 20, 26, 1);
+    text-align: center;
+    line-height: 24px;
+    height: 25px;
+    color: rgba(255, 255, 255, 0.7);
+    transition-duration: 0.1s;
+    outline-color: transparent;
+    outline-style: solid;
+    outline-width: 3px;
+}
+.SuggestedSearchCloseMark:hover {
+    color: rgba(255, 255, 255, 1);
+}
+.SuggestedSearchCloseMark:focus {
+    outline-color: rgba(15, 15, 20, 0.2);
 }

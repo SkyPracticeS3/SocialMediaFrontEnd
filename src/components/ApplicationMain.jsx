@@ -5,48 +5,45 @@ import SuggestedOrFriendUser from './SuggestedOrFriendUser';
 import { toast } from 'react-toastify';
 import { messagesContext, socketContext, userInfoContext } from '@/app/App/page';
 import { useContext, useRef } from 'react';
-import { Card, Placeholder, Spinner } from 'react-bootstrap';
+import { Badge, Card, Placeholder, Spinner } from 'react-bootstrap';
 import DmMessage from './DmMessage';
 
 export default function ApplicationMain({setFriendRequestNotificationClick, Dm, currentPage, setCurrentPage}){
     const {userInfo, setUserInfo} = useContext(userInfoContext);
     const [currentFriends, setCurrentFriends] = useState([]);
     const [currentUserName, setCurrentUserName] = useState('');
-    const [currentSuggested, setCurrentSuggested] = useState([]);
+    const [currentSuggested, setCurrentSuggested] = useState(null);
     const {currentDm, setCurrentDm} = Dm;
     const currentDmRef = useRef(currentDm);
     const [msgContent, setMsgContent] = useState('');
     const sock = useContext(socketContext);
     const inputRef = useRef(null);
     const msgDisplayRef = useRef(null);
-    const msgContentRef = useRef(null);
     const userInfoRef = useRef(null);
     const currentPageRef = useRef(null);
     const [getPlaceHolders, setPlaceHolders] = useState(null);
     const placeHolderCount = 20
     const messagesContainerRef = useRef(null);
 
-    useEffect(()=>{
-        msgContentRef.current = msgContent;
-    }, [msgContent])
-
-    useEffect(()=>{
-        userInfoRef.current = userInfo;
-    }, [userInfo])
-
-    const {messages, setMessages} = useContext(messagesContext);
     const getOtherDmGuy = () => {
         if(currentPage != 'Dm') return;
         currentDmRef.current = currentDm;
         return currentDm.first.userName == userInfo.userName ? currentDm.second : currentDm.first;
     }
     const sendDmMessage = () => {
-        sock.current.emit('sendDmMessage', {user: { userName: getOtherDmGuy().userName}, content: msgContentRef.current, dm: currentDmRef.current});
-        setMessages(msgs => ([...msgs, {senderUser: userInfoRef.current.userName, content: msgContentRef.current, sentAt: Date.now()}]));
+        sock.current.emit('sendDmMessage', {user: { userName: getOtherDmGuy().userName}, content: msgContent, dm: currentDmRef.current});
+        setMessages(msgs => ([...msgs, {senderUser: userInfoRef.current.userName, content: msgContent, sentAt: Date.now()}]));
 
         inputRef.current.value = '';
         setMsgContent('');
     }
+
+    const {messages, setMessages} = useContext(messagesContext);
+
+    useEffect(()=>{
+        userInfoRef.current = userInfo;
+    }, [userInfo])
+
     useEffect(()=>{
         if(msgDisplayRef.current)
             msgDisplayRef.current.scrollTop = msgDisplayRef.current.scrollHeight;
@@ -57,28 +54,11 @@ export default function ApplicationMain({setFriendRequestNotificationClick, Dm, 
 
         for(let i = 0; i < placeHolderCount; i++){
             const width = (Math.random() * 90);
-            placeHolders.push(<div className={`${styles.PlaceHolder} ${styles.PlaceHolderAnimation}`} style={{width: String(width) + '%'}}></div>)
+            placeHolders.push(<div key={placeHolders.length} className={`${styles.PlaceHolder} ${styles.PlaceHolderAnimation}`} style={{width: String(width) + '%'}}></div>)
         }
         setPlaceHolders(placeHolders);
-        window.addEventListener('keydown', e => {
-            if(e.key == "Enter" && msgContentRef.current != ""){
-                sendDmMessage();
-            }
-        })
     }, [])
 
-    // useEffect(()=>{
-    //     if(!userInfo || !currentDm) return;
-    //     console.log(getOtherDmGuy())
-    //     const myFunction = async () => {
-    //         const rawMsgs = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/dms/${userInfo.userName}/${getOtherDmGuy().userName}/msgs`);
-    //         console.log("helooooooooooooo")
-    //         const msgs = await rawMsgs.json();
-    //         setMessages(msgs);
-    //         console.log(msgs);
-    //     }
-    //     myFunction();
-    // }, [currentDm]);
     return <main className={styles.ApplicationMain}>
         <div className={styles.FriendsTitleContainer}>
             <img className={currentPage != 'Dm' ? styles.FriendsImg : styles.CurrentDmUserImage} src={currentPage != 'Dm' ? 'friends.png' : currentDm ? `${process.env.NEXT_PUBLIC_BACKEND_URL}/users/${getOtherDmGuy().userName}/pfp` : null}></img>
@@ -157,12 +137,18 @@ export default function ApplicationMain({setFriendRequestNotificationClick, Dm, 
                 }
                 setCurrentSuggested(res);
             }}>
-                <input className={styles.AddFriendInput} value={currentUserName} onChange={e => {
-                    setCurrentUserName(e.target.value);
-                }} required autoComplete='off' placeholder='Type The UserName'></input>
+                <input className={styles.AddFriendInput} value={currentUserName} onChange={e => 
+                    setCurrentUserName(e.target.value)} required autoComplete='off' placeholder='Type The UserName'></input> <div tabIndex={0} onClick={e => {setCurrentSuggested(null)}} className={styles.SuggestedSearchCloseMark}>✖</div>
             </form>
             <div className={styles.SuggestedFriendsContainer}>
-                {currentSuggested.map((user, index) => <SuggestedOrFriendUser key={index} user={user}></SuggestedOrFriendUser>)}
+                {currentSuggested ? currentSuggested.length > 0 ? currentSuggested.map((user, index) => <SuggestedOrFriendUser key={index} user={user}></SuggestedOrFriendUser>) : /*No People Found*/<div className={styles.NoSuggestedFound}>
+                    <h1 className={styles.NoSuggestedFoundTitle}>..Oops</h1>
+                    <h1 className={styles.NoSuggestedFoundQuesMark}>?</h1>
+                    <h2 className={styles.NoSuggestedFoundSecondTitle}>Looks Like We Didn't Find Any Body With This Name</h2>
+                    <h3 className={styles.NoSuggestedFoundThirdTitle}>Hint: Enter The User Name Not The Display Name</h3>
+                </div> : /*People Are Null ( The User Still Didn't Search )*/<div className={styles.NullSuggestedContainer}>
+                        <h2 className={styles.NullText}><div className={`badge ${styles.NullTextBadge}`}>Enter Someone's User Name To Start Searching!</div></h2>
+                    </div>}
             </div>
         </div> : currentPage == 'Dm' ? <div ref={messagesContainerRef} className={styles.DmPageContainer}><div ref={msgDisplayRef} className={styles.MessagesContainer}>
             {messages ? messages.map((msg, index) => <DmMessage key={index} sentAt={msg.sentAt} senderUserName={msg.senderUser} content={msg.content}></DmMessage>) : <div className={styles.DmPlaceHolderContainer}>
@@ -172,8 +158,8 @@ export default function ApplicationMain({setFriendRequestNotificationClick, Dm, 
             </div>}
         </div>
             <div className={styles.MessageSendInputContainer}>
-                <input onChange={e => {setMsgContent(e.target.value);}} value={msgContent} ref={inputRef} className={styles.MessageSendInput} placeholder='Enter A Message'></input>
-                <button onClick={e => {sendDmMessage();}} className='btn btn-primary focus-ring focus-ring-primary ms-2'>Send</button>
+                <input onChange={e => setMsgContent(e.target.value)} value={msgContent} ref={inputRef} className={styles.MessageSendInput} placeholder='Enter A Message'></input>
+                <button onClick={e => sendDmMessage()} className='btn btn-primary focus-ring focus-ring-primary ms-2'>Send</button>
             </div>
         </div> : <></>
         }

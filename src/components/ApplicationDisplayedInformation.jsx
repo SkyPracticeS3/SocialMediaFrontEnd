@@ -1,4 +1,5 @@
 import styles from './ApplicationDisplayedInformation.module.css'
+import otherStyles from './CurrentUserInfo.module.css'
 
 export default function ApplicationDisplayedInformation({currentUser}){
     return <div className={styles.ApplicationDisplayedInformation}>

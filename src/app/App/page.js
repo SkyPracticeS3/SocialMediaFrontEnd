@@ -31,6 +31,7 @@ export default function Application(){
     const [currentDm, setCurrentDm] = useState({});
     const dmRef = useRef(null);
     const [messages, setMessages] = useState(null);
+    const userInfoRef = useRef(null);
     /**@type {RefObject<Socket<DefaultEventsMap, DefaultEventsMap> >} */
     const sock = useRef(null);
 
@@ -44,16 +45,20 @@ export default function Application(){
     }
 
     useEffect(()=>{
+        userInfoRef.current = userInfo;
+    }, [userInfo])
+
+    useEffect(()=>{
         window.addEventListener('keydown', e => {
             if(e.key == "Escape"){
-                console.log(currentDm);
+                console.log(dmRef.current);
             }
         })
     }, [])
 
 
     useEffect(()=>{
-        console.log(currentMainPage, currentDm)
+        (currentMainPage, currentDm)
         if(currentMainPage != 'Dm' && currentDm != null){
             dmRef.current = null
             setCurrentDm(null);
@@ -64,21 +69,20 @@ export default function Application(){
     }, [currentMainPage]);
 
     useEffect(()=>{
-        console.log('got executed');
+        ('got executed');
         dmRef.current = currentDm;
-        console.log(dmRef.current);
+        (dmRef.current);
         if(!userInfo || !dmRef.current){
-            console.log("Something Went Wrong");
+            ("Something Went Wrong");
             return;
         }
         const myFunction = async () => {
-                        console.log("Messages Got Successfully fetched firstly")
-
+            console.log(`${process.env.NEXT_PUBLIC_BACKEND_URL}/dms/${userInfo.userName}/${getOtherDmGuy().userName}/msgs`);
             const rawMsgs = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/dms/${userInfo.userName}/${getOtherDmGuy().userName}/msgs`);
-            console.log("Messages Got Successfully fetched")
+            ("Messages Got Successfully fetched")
             const msgs = await rawMsgs.json();
             setMessages(msgs);
-            console.log(msgs);
+            (msgs);
         }
         myFunction();
     }, [currentDm])
@@ -91,9 +95,7 @@ export default function Application(){
         if(!sock.current){
             sock.current = io(process.env.NEXT_PUBLIC_BACKEND_SOCKET_URL);
             sock.current.on('userInfo', data => {
-                setUserInfo(data);
-                console.log(data)
-                
+                setUserInfo(data);                
             });
             sock.current.on('friendRequestReceived', data => {
                 setFriendRequestToastInfo({show: true, userInfo: structuredClone(data.sender)})
@@ -125,18 +127,35 @@ export default function Application(){
                 setUserInfo(old => {
                     const newUserInfo = structuredClone(old);
                     newUserInfo.relations = newUserInfo.relations.filter(e => e.first.userName
-                         == userInfo.userName ? e.second.userName != data.unFriender.userName
+                         == newUserInfo.userName ? e.second.userName != data.unFriender.userName
                          : e.first.userName != data.unFriender.userName);
                     return newUserInfo;
                 })
             });
             sock.current.on('dmMessageSent', data => {
-                console.log(dmRef.current._id, data.dm.uuid);
+                (dmRef.current._id, data.dm.uuid);
                 if(dmRef.current._id == data.dm.uuid){
                     setMessages(msgs => ([...msgs, {senderUser: data.senderUser, content: data.content, sentAt: Date.now()}]))
                 }
             })
-            console.log(localStorage.getItem('credentals'));
+            sock.current.on('dmOpened', data => {
+                setUserInfo(e => {
+                    const newUserInfo = structuredClone(e);
+                    newUserInfo.openedDms = [{first: newUserInfo, second: data.user, uuid: data.dmUUID, _id: data.dmUUID}, ...newUserInfo.openedDms];
+                    return newUserInfo;
+                })
+            })
+            sock.current.on('dmOpenedByYou', data => {
+                setUserInfo(e => {
+                    const newUserInfo = structuredClone(e);
+                    const newDm = {first: newUserInfo, second: data.user, uuid: data.dmUUID, _id: data.dmUUID};
+
+                   newUserInfo.openedDms = [newDm, ...newUserInfo.openedDms];
+                    return newUserInfo;
+                })
+                setCurrentDm({first: userInfoRef.current, second: data.user, uuid: data.dmUUID, _id: data.dmUUID});
+                setCurrentMainPage('Dm');
+            })
             sock.current.on('connect', e => {
                 sock.current.emit('authInfo', {
                     userName: JSON.parse(localStorage.getItem('credentals')).userName,
@@ -145,7 +164,6 @@ export default function Application(){
             })
             
             sock.current.on('disconnect', ()=>{
-                console.log('disconnected');
             })
         }
     }, [])
@@ -160,7 +178,7 @@ export default function Application(){
                             <div className={styles.ApplicationFlexContainer}>
                                 <aside className={styles.ApplicationAside}>
                                     <ApplicationAside setCurrentPage={setCurrentMainPage} rawOpenedDms={userInfo ? userInfo.openedDms : []} Dm={{currentDm, setCurrentDm}} openedDmsPeople={userInfo ? userInfo.openedDms.map(e => e.first.userName == userInfo.userName ? e.second : e.first) : null}></ApplicationAside>
-                                    <div className={styles.SelfProfileViewer} onClick={e => {
+                                    <div className={styles.SelfProfileViewer} tabIndex={0} onClick={e => {
                                         setCurrentUserInfo(userInfo);
                                         setShowCurrentUserInfo(true);
                                     }}>
@@ -176,7 +194,7 @@ export default function Application(){
                                 <ApplicationMain Dm={{currentDm, setCurrentDm}} currentPage={currentMainPage} setCurrentPage={setCurrentMainPage}></ApplicationMain>
                                 <ApplicationDisplayedInformation currentUser={dmRef.current?.first && dmRef.current?.second ? (dmRef.current.first.userName == userInfo.userName ? dmRef.current.second : dmRef.current.first) : null}></ApplicationDisplayedInformation>
                             </div>
-                        </div>{showCurrentUserInfo && <CurrentUserInfo shown={showCurrentUserInfo} userInfO={currentUserInfo} setShown={setShowCurrentUserInfo}></CurrentUserInfo>}
+                        </div>{showCurrentUserInfo && <CurrentUserInfo setCurrentPage={setCurrentMainPage} setCurrentDm={setCurrentDm} shown={showCurrentUserInfo} userInfO={currentUserInfo} setShown={setShowCurrentUserInfo}></CurrentUserInfo>}
                         <ToastContainer position='top-center'>
                             <SingleButtonToast show={friendRequestToastInfo.show} 
                                 title={'Friend Request'}
