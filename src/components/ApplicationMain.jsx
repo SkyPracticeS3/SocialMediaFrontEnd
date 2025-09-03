@@ -7,6 +7,7 @@ import { messagesContext, socketContext, userInfoContext } from '@/app/App/page'
 import { useContext, useRef } from 'react';
 import { Badge, Card, Placeholder, Spinner } from 'react-bootstrap';
 import DmMessage from './DmMessage';
+import {censorString, checkString} from '../StringChecker.js'
 
 export const groupBy = (array, predicate) => {
     const resultingArrays = []
@@ -31,7 +32,6 @@ export default function ApplicationMain({setFriendRequestNotificationClick, Dm, 
     const [currentSuggested, setCurrentSuggested] = useState(null);
     const {currentDm, setCurrentDm} = Dm;
     const currentDmRef = useRef(currentDm);
-    const [msgContent, setMsgContent] = useState('');
     const sock = useContext(socketContext);
     const inputRef = useRef(null);
     const msgDisplayRef = useRef(null);
@@ -48,11 +48,10 @@ export default function ApplicationMain({setFriendRequestNotificationClick, Dm, 
         return currentDm.first.userName == userInfo.userName ? currentDm.second : currentDm.first;
     }
     const sendDmMessage = () => {
-        sock.current.emit('sendDmMessage', {user: { userName: getOtherDmGuy().userName}, content: msgContent, dm: currentDmRef.current});
-        setMessages(msgs => ([...msgs, {senderUser: userInfoRef.current.userName, content: msgContent, sentAt: Date.now()}]));
+        const realMsgContent = censorString(inputRef.current.value.trim());
+        sock.current.emit('sendDmMessage', {user: {_id: getOtherDmGuy()._id}, content: realMsgContent, dm: {_id: currentDmRef.current._id}});
 
         inputRef.current.value = '';
-        setMsgContent('');
     }
 
     const {messages, setMessages} = useContext(messagesContext);
@@ -76,7 +75,7 @@ export default function ApplicationMain({setFriendRequestNotificationClick, Dm, 
         }
         setPlaceHolders(placeHolders);
         window.addEventListener('keydown', e => {
-            if(e.key == 'Enter' && inputRef.current.value != ''){
+            if(e.key == 'Enter' && inputRef.current  && inputRef.current.value != ''){
                 SubmitButtonRef.current.click()
             }
         })
@@ -177,7 +176,7 @@ export default function ApplicationMain({setFriendRequestNotificationClick, Dm, 
             {messages ? groupBy(messages, e => new Date(e.sentAt).toDateString()).map((msgs, index) => <div key={index}>
             <div className={styles.MessageDateDivider}><div className={styles.MessageStartDateDivider}></div>
                 <div className={styles.MessageDateDividerText}>{msgs.key}</div></div>{
-            msgs.elements.map((e, index) => <DmMessage key={index} Mine={e.senderUser == userInfo.userName}
+            msgs.elements.map((e, index) => <DmMessage key={e.uuid} Mine={e.senderUser == userInfo.userName}
              sentAt={e.sentAt} senderUserName={e.senderUser} content={e.content}></DmMessage>)}</div>) : <div className={styles.DmPlaceHolderContainer}>
                 {
                     getPlaceHolders
@@ -185,7 +184,7 @@ export default function ApplicationMain({setFriendRequestNotificationClick, Dm, 
             </div>}
         </div>
             <div className={styles.MessageSendInputContainer}>
-                <input onChange={e => setMsgContent(e.target.value)} value={msgContent} ref={inputRef} className={styles.MessageSendInput} placeholder='Enter A Message'></input>
+                <input ref={inputRef} className={styles.MessageSendInput} placeholder='Enter A Message'></input>
                 <button ref={SubmitButtonRef} onClick={e => sendDmMessage()} className='btn btn-primary focus-ring focus-ring-primary ms-2'>Send</button>
             </div>
         </div> : <></>

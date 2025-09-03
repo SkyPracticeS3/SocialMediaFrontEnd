@@ -38,7 +38,7 @@ export default function Home() {
       <div className={styles.homeScrollDown}>Scroll Down</div>
       <div ref={mechanismDiv} className={`${mechanismDivVisible ? styles.visibleHomeMechanismDiv : ''} ${styles.homeMechanismDiv}`}>
         <p className={styles.mechanismExplanation}>Prevents Sending Sentences With Known Toxic Slangs</p>
-        <img className={styles.mechanismImage} alt="Soon"></img>
+        <video className={styles.mechanismVideo} src={'Preview.mp4'} muted playsInline  autoPlay loop/>
       </div>
       <div className={styles.twist}>Chat With The People You Love Using This Fast/LightWeight New Application With 0 Toxicity! I Will Put More Stuff Here Soon, What Are You Waiting For ? Try it Now Using The Login/Register Button</div>
     </main>

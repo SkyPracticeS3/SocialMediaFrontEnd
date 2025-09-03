@@ -40,10 +40,17 @@
   height: calc(100% - 90px);
   border-radius: 15px;
 }
+.mechanismVideo{
+  width: calc(100% - 40px);
+  margin-left: 20px;
+  margin-top: 30px;
+  border-radius: 15px;
+}
 .homeMechanismDiv{
   width: 90%;
   margin-left: 5%;
-  height: 400px;
+  height: fit-content;
+  padding: 10px;
   background-color: rgb(255, 255, 255, 0.1);
   backdrop-filter: blur(12.0px);
   -webkit-backdrop-filter: blur(12.0px);

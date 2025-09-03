@@ -10,6 +10,7 @@ import { RefObject } from 'react';
 import FriendRequestToast from '@/components/toasts/FriendRequestToast';
 import { Toast, ToastHeader, ToastBody, ToastContainer } from 'react-bootstrap';
 import SingleButtonToast from '@/components/ToastComponent/ToastComponents';
+import {initBannedStrings} from '@/StringChecker.js'
 
 export const showCurrentUserInfoCtx = createContext(null);
 export const currentUserInfoCtx = createContext(null);
@@ -78,9 +79,11 @@ export default function Application(){
         }
         const myFunction = async () => {
             console.log(`${process.env.NEXT_PUBLIC_BACKEND_URL}/dms/${userInfo.userName}/${getOtherDmGuy().userName}/msgs`);
-            const rawMsgs = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/dms/${userInfo.userName}/${getOtherDmGuy().userName}/msgs`);
-            ("Messages Got Successfully fetched")
+            const rawMsgs = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/dms/${userInfo.userName}/${getOtherDmGuy().userName}/msgs?limit=50`);
+            /**@type {Array} */
             const msgs = await rawMsgs.json();
+            console.log(msgs);
+
             setMessages(msgs);
             (msgs);
         }
@@ -91,6 +94,8 @@ export default function Application(){
         if(!localStorage.getItem('credentals')){
             window.location.href = '/Register';
         }
+
+        initBannedStrings();
 
         if(!sock.current){
             sock.current = io(process.env.NEXT_PUBLIC_BACKEND_SOCKET_URL);
@@ -133,9 +138,15 @@ export default function Application(){
                 })
             });
             sock.current.on('dmMessageSent', data => {
-                (dmRef.current._id, data.dm.uuid);
-                if(dmRef.current._id == data.dm.uuid){
-                    setMessages(msgs => ([...msgs, {senderUser: data.senderUser, content: data.content, sentAt: Date.now()}]))
+                (dmRef.current._id, data.dm._id);
+                if(dmRef.current._id == data.dm._id){
+                    setMessages(msgs => {
+                        let newMsgs = [...msgs, {senderUser: data.senderUser, content: data.content, sentAt: Date.now(), uuid: data.uuid}];
+                        if(newMsgs.length > 50){
+                            newMsgs = newMsgs.slice(-50);
+                        }
+                        return newMsgs;
+                    });
                 }
             })
             sock.current.on('dmOpened', data => {
